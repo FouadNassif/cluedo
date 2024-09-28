@@ -1,135 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Styled Dynamic Table</title>
+    <title>Responsive Table</title>
     <style>
+        /* Base styling */
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            padding: 20px;
-        }
-
-        .table-container {
-            margin: 20px auto;
-            width: 300px;
+            background-color: #f4f4f4;
+            margin: 0;
         }
 
         table {
-            border-collapse: collapse;
             width: 100%;
+            background-color: rgba(3, 98, 199, 0.73);
+            margin: 0 auto;
+            border-collapse: separate; /* Set to 'separate' to allow border-spacing */
+            border-spacing: 10px; /* Adds gap between cells */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: 100vh;
         }
 
         th, td {
-            border: 1px solid #000080; /* Dark blue border */
-            padding: 5px;
+            padding: 0;
             text-align: center;
+            border: 1px solid #ddd;
+            background-color: rgb(255, 255, 255);
         }
 
         th {
-            background-color: #f0f0f8; /* Light blue background for headers */
-            font-weight: bold;
+            background-color: #007BFF;
+            color: #fff;
         }
 
         td {
-            background-color: #fff; /* White background for cells */
-        }
-
-        /* Custom button styling to match the image */
-        button {
-            width: 100%;
-            height: 100%;
-            padding: 0;
-            margin: 0;
-            background-color: #fff;
-            border: none;
             font-size: 16px;
             cursor: pointer;
-            color: #000080; /* Dark blue font for buttons */
-        }
-
-        button:hover {
-            background-color: #e0e0ff; /* Hover effect */
-        }
-
-        th input {
-            width: 25px; /* Input size for single letters */
-            text-align: center;
-            border: none;
-            background-color: transparent;
-            font-size: 16px;
         }
 
         .section-title {
-            background-color: #f0f0f8;
             font-weight: bold;
-            text-align: left;
-            padding-left: 10px;
+            background-color: #f8f9fa;
+        }
+
+        /* Checked state styling */
+        .checked {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        .section-title-checked {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        /* Style for input to fill cell */
+        input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 0;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        /* Remove focus outline for better appearance */
+        input:focus {
+            outline: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            table, th, td {
+                font-size: 12px;
+            }
+
+            input[type="text"] {
+                font-size: 12px;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="table-container" id="tableContainer">
-    </div>
+    <table id="table"></table>
 
     <script>
-        function createTable() {
-            // Data for rows and columns
-            const who = ["Green", "Mustard", "Peacock", "Plum", "Scarlet", "White"];
-            const what = ["Wrench", "Candlestick", "Dagger", "Pistol", "Lead Pipe", "Rope"];
-            const where = ["Bathroom", "Study", "Dining Room", "Games Room", "Garage", "Bedroom", "Living Room", "Kitchen", "Courtyard"];
+        const who = ["Green", "Mustard", "Peacock", "Plum", "Scarlet", "White"];
+        const what = ["Wrench", "Candlestick", "Dagger", "Pistol", "Lead Pipe", "Rope"];
+        const where = ["Bathroom", "Study", "Dining Room", "Games Room", "Garage", "Bedroom", "Living Room", "Kitchen", "Courtyard"];
 
-            const tableContainer = document.getElementById('tableContainer');
-            let tableHTML = '<table>';
+        let tableHTML = `<tr><td style="display:none:"></td>`;
+        for (let i = 0; i < 6; i++) {
+            tableHTML += '<td><input type="text"></td>';  /* Removed placeholder */
+        }
+        tableHTML += `</tr>
+            <tr>
+                <td class="section-title">WHO?</td>
+                <td colspan="6"></td>
+            </tr>`;
 
-            // First row (inputs for letters)
-            tableHTML += '<tr><th>WHO?</th>';
+        who.forEach((person, rowIndex) => {
+            tableHTML += `<tr><td id="who-title-${rowIndex}" class="section-title">${person}</td>`;
             for (let i = 0; i < 6; i++) {
-                tableHTML += '<th><input type="text" maxlength="1"></th>';
+                tableHTML += `<td id="who-${rowIndex}-${i}" onclick="toggleCell(this, 'who-title-${rowIndex}')"></td>`;
             }
             tableHTML += '</tr>';
+        });
 
-            
-            // Section title "Who"
-            who.forEach((person, rowIndex) => {
-                tableHTML += `<tr><td class="section-title">${person}</td>`;
-                for (let i = 0; i < 6; i++) {
-                    tableHTML += `<td><button id="btn-who-${rowIndex}-${i}" onclick="cellAction(this.id)">O</button></td>`;
+        tableHTML += `<tr>
+            <td class="section-title">What?</td>
+            <td colspan="6" class="blue"></td>
+        </tr>`;
+
+        what.forEach((item, rowIndex) => {
+            tableHTML += `<tr><td id="what-title-${rowIndex}" class="section-title">${item}</td>`;
+            for (let i = 0; i < 6; i++) {
+                tableHTML += `<td id="what-${rowIndex}-${i}" onclick="toggleCell(this, 'what-title-${rowIndex}')"></td>`;
+            }
+            tableHTML += '</tr>';
+        });
+
+        tableHTML += `<tr>
+            <td class="section-title">Where?</td>
+            <td colspan="6"></td>
+        </tr>`;
+
+        where.forEach((place, rowIndex) => {
+            tableHTML += `<tr><td id="where-title-${rowIndex}" class="section-title">${place}</td>`;
+            for (let i = 0; i < 6; i++) {
+                tableHTML += `<td id="where-${rowIndex}-${i}" onclick="toggleCell(this, 'where-title-${rowIndex}')"></td>`;
+            }
+            tableHTML += '</tr>';
+        });
+
+        document.getElementById("table").innerHTML = tableHTML;
+
+        function toggleCell(cell, titleId) {
+            // Toggle checked state of the cell
+            if (cell.classList.contains('checked')) {
+                cell.classList.remove('checked');
+            } else {
+                cell.classList.add('checked');
+            }
+
+            // Check if any cell in the row is checked to toggle the row title
+            const rowCells = cell.parentNode.querySelectorAll('td');
+            let anyChecked = false;
+            rowCells.forEach(td => {
+                if (td.classList.contains('checked')) {
+                    anyChecked = true;
                 }
-                tableHTML += '</tr>';
             });
 
-            // Section title "What"
-            what.forEach((item, rowIndex) => {
-                tableHTML += `<tr><td class="section-title">${item}</td>`;
-                for (let i = 0; i < 6; i++) {
-                    tableHTML += `<td><button id="btn-what-${rowIndex}-${i}" onclick="cellAction(this.id)">O</button></td>`;
-                }
-                tableHTML += '</tr>';
-            });
-
-            // Section title "Where"
-            where.forEach((place, rowIndex) => {
-                tableHTML += `<tr><td class="section-title">${place}</td>`;
-                for (let i = 0; i < 6; i++) {
-                    tableHTML += `<td><button id="btn-where-${rowIndex}-${i}" onclick="cellAction(this.id)">O</button></td>`;
-                }
-                tableHTML += '</tr>';
-            });
-
-            tableHTML += '</table>';
-            tableContainer.innerHTML = tableHTML;
-            tableContainer.style.display = 'block'; // Show the table
+            // Toggle the row title if any cell in the row is checked
+            const titleElement = document.getElementById(titleId);
+            if (anyChecked) {
+                titleElement.classList.add('section-title-checked');
+            } else {
+                titleElement.classList.remove('section-title-checked');
+            }
         }
-
-        // Function to handle button click
-        function cellAction(id) {
-            const button = document.getElementById(id);
-            button.textContent = button.textContent === 'O' ? 'X' : 'O';
-        }
-        createTable()
     </script>
-
 </body>
+
 </html>
